@@ -1,0 +1,794 @@
+:root {
+    /* Dark Mode Colors */
+    --bg-primary: #0f0f23;
+    --bg-secondary: rgba(255, 255, 255, 0.02);
+    --bg-tertiary: rgba(255, 255, 255, 0.03);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-primary: white;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --text-muted: rgba(255, 255, 255, 0.4);
+    --header-bg: #0f0f23;
+}
+
+[data-theme="light"] {
+    /* Light Mode Colors */
+    --bg-primary: #edf1f5;
+    --bg-secondary: #ffffff; /* 변경: 라이트 모드 섹션 배경을 흰색으로 */
+    --bg-tertiary: #f8f9fa; /* 변경: 라이트 모드 탭 배경 등 약간 어두운 흰색 계열 */
+    --border-color: rgba(0, 0, 0, 0.1);
+    --text-primary: #1e293b;
+    --text-secondary: rgba(30, 41, 59, 0.7);
+    --text-muted: rgba(30, 41, 59, 0.5);
+    --header-bg:#edf1f5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    height: 100vh;
+    /* overflow: hidden; */ /* 전체 페이지 스크롤을 막는 속성 제거 또는 주석 처리 */
+    /* transition: all 0.3s ease; */ /* 모든 속성 대신 특정 속성에만 적용 */
+    transition: background 0.3s ease, color 0.3s ease; /* 테마 변경과 관련된 속성 위주로 애니메이션 */
+}
+
+/* Header */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--header-bg); /* 헤더 배경색 추가 */
+    height: 70px;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    height: 100%;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #00f5ff, #0088ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.theme-toggle {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    z-index: 100;
+    position: relative;
+}
+
+.theme-toggle:hover {
+    background: var(--bg-tertiary);
+    transform: scale(1.05);
+}
+
+.status-indicators {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff3366;
+    animation: pulse 2s infinite;
+}
+
+.status-connected .status-dot {
+    background: #00ff88;
+}
+
+/* Main Dashboard */
+.dashboard {
+    margin-top: 70px;
+    height: calc(100vh - 70px - 20px); /* 새로운 margin-top과 dashboard의 하단 padding(20px)을 고려 */
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Camera Section */
+.camera-section {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 1.5rem;
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+    min-height: 0; /* 중요: 플렉스 아이템이 축소될 수 있도록 */
+}
+
+.camera-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #00f5ff, transparent);
+}
+
+.camera-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem; /* 여백 줄임 */
+    flex-shrink: 0; /* 헤더 크기 고정 */
+}
+
+.camera-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.camera-controls-mini {
+    display: flex;
+    gap: 0.5rem;
+    z-index: 100;
+    position: relative;
+}
+
+.btn-mini {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 100;
+    position: relative;
+}
+
+.btn-mini:hover {
+    background: var(--bg-secondary);
+}
+
+.btn-mini.active {
+    background: linear-gradient(45deg, #0088ff, #00f5ff);
+    color: white;
+}
+
+.camera-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 0; /* 중요: 컨테이너가 축소될 수 있도록 */
+}
+
+.camera-preview {
+    width: 100%;
+    max-width: 512px;
+    aspect-ratio: 1;
+    background: #000;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.camera-placeholder {
+    color: #7e8185;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.detection-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.detection-box {
+    position: absolute;
+    border: 2px solid #ff3366;
+    border-radius: 4px;
+    background: rgba(255, 51, 102, 0.1);
+}
+
+.detection-label {
+    position: absolute;
+    top: -25px;
+    left: 0;
+    background: #ff3366;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Detection Panel */
+.detection-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    backdrop-filter: blur(20px);
+    min-height: 0; /* For flex child to shrink properly if content is too large */
+    overflow: hidden;
+}
+
+.panel-header {
+    padding: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alert-count {
+    background: linear-gradient(45deg, #ff3366, #ff6699);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+}
+
+.panel-tabs {
+    display: flex;
+    background: var(--bg-tertiary);
+    margin: 0rem 1rem;
+    border-radius: 12px;
+    padding: 0.25rem;
+}
+
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    pointer-events: auto;
+    z-index: 50;
+    position: relative;
+}
+
+.tab.active {
+    background: linear-gradient(45deg, #0088ff, #00f5ff);
+    color: white;
+}
+
+.tab:not(.active) {
+    color: var(--text-secondary);
+}
+
+.tab:not(.active):hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.panel-content {
+    flex-grow: 1; /* Allow content to take available vertical space */
+    min-height: 0; /* Allow content to shrink and scroll */
+    padding: 1rem 1.5rem;
+    overflow-y: auto;
+}
+
+.panel-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.panel-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.panel-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 245, 255, 0.3);
+    border-radius: 3px;
+}
+
+.panel-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 245, 255, 0.5);
+}
+
+.detection-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1rem;
+    background: var(--bg-tertiary);
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.detection-item:hover {
+    background: var(--bg-secondary);
+    transform: translateX(4px);
+}
+
+.detection-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.detection-name {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    font-size: 1.3rem;
+    color: var(--text-primary);
+}
+
+.detection-details {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.3;
+}
+
+.detection-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    margin-left: 1rem;
+}
+
+.severity-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detection-time {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.severity-high {
+    border-left-color: #ff3366;
+}
+
+.severity-high .severity-badge {
+    background: linear-gradient(45deg, #ff3366, #ff6699);
+    color: white;
+}
+
+.severity-medium {
+    border-left-color: #ff8800;
+}
+
+.severity-medium .severity-badge {
+    background: linear-gradient(45deg, #ff8800, #ffaa00);
+    color: white;
+}
+
+.severity-low {
+    border-left-color: #ffdd00;
+}
+
+.severity-low .severity-badge {
+    background: linear-gradient(45deg, #ffdd00, #ffee44);
+    color: #000;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.stats-summary {
+    margin-bottom: 1.5rem;
+}
+
+.stats-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.stats-footer {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* View Selector Buttons */
+.view-selector {
+    display: flex;
+    gap: 0.5rem;
+    margin-right: 1rem;
+    flex-shrink: 0; /* 축소 방지 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+}
+
+.btn-view-select {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1.2rem;
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    white-space: nowrap; /* 버튼 내 텍스트 줄바꿈 방지 */
+    flex-shrink: 0; /* 버튼 축소 방지 */
+}
+
+.btn-view-select:hover {
+    background: var(--bg-tertiary);
+    transform: scale(1.02);
+}
+
+.btn-view-select.active {
+    background: #00a2ff;
+    color: white;
+    border-color: transparent;
+}
+
+/* Upload Section */
+.upload-section {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 15px;
+    height: 100%;
+}
+
+.upload-area {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 2rem;
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+    min-height: 400px;
+}
+
+.upload-area::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #00f5ff, transparent);
+}
+
+.upload-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+}
+
+.upload-title::before {
+    content: '📁';
+    font-size: 1.2rem;
+}
+
+.btn-upload {
+    background: linear-gradient(45deg, #0088ff, #00f5ff);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 16px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+    align-self: flex-start;
+}
+
+.btn-upload:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-analysis-area {
+    width: 100%;
+    max-width: 500px; /* Or adjust as needed */
+    aspect-ratio: 1 / 1; /* Or adjust based on typical image aspect ratio */
+    background-color: var(--bg-primary);
+    border-radius: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* For spinner and SVG overlay */
+    overflow: hidden; /* Ensures SVG overlay doesn't spill */
+}
+
+.image-preview-container-upload {
+  width: 100%;
+  height: 100%;
+  position: relative; /* For SVG overlay positioning */
+}
+
+.image-preview-container-upload img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 16px;
+}
+
+/* Analysis Results Panel */
+.analysis-results-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+}
+
+.analysis-results-panel h3 {
+    padding: 1.2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.analysis-results-panel h3::before {
+    content: '⚡';
+    font-size: 1rem;
+}
+
+.upload-placeholder {
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Loading Spinner */
+.loading-spinner-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-secondary);
+}
+
+.loading-spinner {
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--text-primary); /* Spinner color */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+.results-placeholder {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    text-align: center;
+    min-height: 200px;
+}
+
+.results-placeholder p {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Responsive for Upload Section */
+@media (max-width: 768px) {
+    .view-selector {
+        gap: 0.3rem;
+        margin-right: 0.5rem;
+        /* flex-direction 제거하여 한 줄 유지 */
+    }
+    
+    .btn-view-select {
+        padding: 0.4rem 0.7rem; /* 모바일에서 패딩 조정 */
+        font-size: 0.75rem; /* 모바일에서 폰트 크기 더 축소 */
+    }
+    
+    .upload-section {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 15px;
+    }
+    
+    .upload-area {
+        padding: 1.5rem;
+        min-height: 350px;
+    }
+    
+    .upload-title {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn-upload {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .image-preview-container-upload {
+        min-height: 250px;
+    }
+    
+    .analysis-results-panel {
+        min-height: 200px;
+    }
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slide-in {
+    animation: slideInRight 0.4s ease;
+}
+
+@keyframes detectPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 51, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); }
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .dashboard {
+        grid-template-columns: 1fr 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 10px;
+        padding: 10px;
+    }
+    
+    .camera-section {
+        padding: 1.2rem;
+        height: 380px; /* 고정 높이 */
+        min-height: 380px;
+    }
+
+    .camera-header {
+        margin-bottom: 0.8rem;
+    }
+    
+    .camera-preview {
+        width: 280px; /* 고정 크기 */
+        height: 280px; /* 고정 크기 */
+        max-width: none; /* max-width 제거 */
+        flex-shrink: 0; /* 축소 방지 */
+    }
+    
+    .detection-panel {
+        min-height: 350px;
+        max-height: 350px;
+    }
+    
+    .nav {
+        padding: 1rem;
+    }
+    
+    .status-indicators {
+        display: none;
+    }
+
+    .camera-title {
+        font-size: 1.2rem;
+    }
+
+    .btn-mini {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}
