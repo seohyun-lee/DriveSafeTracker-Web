@@ -519,7 +519,7 @@ body {
     padding: 2rem;
     backdrop-filter: blur(20px);
     position: relative;
-    overflow: hidden;
+    min-width: 380px;
     min-height: 400px;
 }
 
@@ -534,7 +534,7 @@ body {
 }
 
 .upload-title {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 2rem;
     display: flex;
@@ -568,7 +568,7 @@ body {
 
 .image-analysis-area {
     width: 100%;
-    max-width: 500px; /* Or adjust as needed */
+    max-width: 512px;
     aspect-ratio: 1 / 1; /* Or adjust based on typical image aspect ratio */
     background-color: var(--bg-primary);
     border-radius: 1rem;
@@ -693,7 +693,7 @@ body {
     }
     
     .upload-title {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         margin-bottom: 1.5rem;
     }
     
