@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import axios from 'axios'; // axios import 추가
+
+const API_BASE_URL = 'http://localhost:8000'; // 백엔드 API 기본 주소
 
 function App() {
   const [theme, setTheme] = useState('light');
@@ -15,7 +18,7 @@ function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [alertCount, setAlertCount] = useState(0);
   const [liveDetections, setLiveDetections] = useState<Array<any>>([]);
-  const [historyDetections, setHistoryDetections] = useState<Array<any>>([
+  const [historyDetections, _setHistoryDetections] = useState<Array<any>>([
     // Static history example data
     {
       id: 'hist1',
@@ -230,50 +233,40 @@ function App() {
         setIsImageAnalyzing(true);
         setProcessingStatusText('이미지 분석 중...');
 
-        const reader = new FileReader();
-        reader.onload = (e) => { 
-          setImagePreviewUrl(e.target?.result as string); 
-          // Simulate API call after image is loaded and preview is set
-          setTimeout(() => {
-            // Mock API response
-            const mockApiResponse = [
-              {
-                id: 'upload-det-1',
-                name: '균열 감지',
-                severity: 'medium',
-                type: 'polygon',
-                points: [{ x: 50, y: 60 }, { x: 150, y: 70 }, { x: 130, y: 180 }, { x: 40, y: 150 }],
-                confidence: 0.88
-              },
-              {
-                id: 'upload-det-2',
-                name: '포트홀 의심',
-                severity: 'high',
-                type: 'bbox',
-                x: 200, y: 220, width: 100, height: 80,
-                confidence: 0.92
-              },
-              {
-                id: 'upload-det-3',
-                name: '표지판',
-                severity: 'low',
-                type: 'bbox',
-                x: 300, y: 50, width: 70, height: 100,
-                confidence: 0.95
-              }
-            ];
-            setAnalysisResults(mockApiResponse);
+        const reader = new FileReader(); // 이미지 미리보기를 위해 FileReader는 유지
+        reader.onload = async (e) => { 
+          setImagePreviewUrl(e.target?.result as string); // 미리보기 URL 설정
+
+          // API 호출 로직 시작
+          try {
+            const fd = new FormData();
+            fd.append('file', file);
+            const { data: apiResponse } = await axios.post(
+              `${API_BASE_URL}/predict`, // API 엔드포인트
+              fd,
+              { headers: { 'Content-Type': 'multipart/form-data' } }
+            );
+
+            // API 응답 처리 (실제 API 응답 형식에 맞게 조정 필요)
+            // 예시: apiResponse가 배열 형태의 탐지 결과라고 가정
+            setAnalysisResults(apiResponse || []); // API 응답이 없을 경우 빈 배열로 처리
             setIsImageAnalyzing(false);
-            setProcessingStatusText(`분석 완료: ${mockApiResponse.length}개 항목 발견`);
-            if (mockApiResponse.some(res => res.severity === 'high')) {
+            setProcessingStatusText(`분석 완료: ${apiResponse?.length || 0}개 항목 발견`);
+
+            if (apiResponse?.some((res: any) => res.severity === 'high')) {
               playAlertSound();
               speakAlert('이미지에서 고위험 요소가 발견되었습니다.');
-            } else if (mockApiResponse.length > 0) {
-              speakAlert(`이미지 분석이 완료되어 ${mockApiResponse.length}개 항목이 발견되었습니다.`);
+            } else if (apiResponse?.length > 0) {
+              speakAlert(`이미지 분석이 완료되어 ${apiResponse.length}개 항목이 발견되었습니다.`);
             } else {
               speakAlert('이미지 분석 결과, 특이사항이 발견되지 않았습니다.');
             }
-          }, 3000); // Simulate 3 seconds API call
+          } catch (error) {
+            console.error("Error uploading and analyzing image:", error);
+            setIsImageAnalyzing(false);
+            setProcessingStatusText('오류 발생: 이미지 분석에 실패했습니다.');
+            speakAlert('이미지 분석 중 오류가 발생했습니다.');
+          }
         };
         reader.readAsDataURL(file);
       }
@@ -456,7 +449,7 @@ function App() {
                             {overlay.type === 'polygon' && overlay.points && ( <polygon points={overlay.points.map((p: {x:number, y:number}) => `${p.x},${p.y}`).join(' ')} style={{ fill: fillColor, stroke: strokeColor, strokeWidth: 2 }} /> )}
                             {(overlay.type === 'bbox' || (overlay.type === 'polygon' && overlay.points && overlay.points.length > 0)) && (
                               <foreignObject x={labelX} y={labelY < 0 ? 0 : labelY} width="120" height="30"> 
-                                <div xmlns="http://www.w3.org/1999/xhtml" className="detection-label" style={{ backgroundColor: labelBackgroundColor, color: overlay.severity === 'low' ? '#000' : '#fff', display: 'inline-block', padding: '3px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                <div className="detection-label" style={{ backgroundColor: labelBackgroundColor, color: overlay.severity === 'low' ? '#000' : '#fff', display: 'inline-block', padding: '3px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, whiteSpace: 'nowrap' }}>
                                   {overlay.name}
                                 </div>
                               </foreignObject>
@@ -553,7 +546,7 @@ function App() {
                             {item.type === 'polygon' && item.points && ( <polygon points={item.points.map((p: {x:number, y:number}) => `${p.x},${p.y}`).join(' ')} style={{ fill: fillColor, stroke: strokeColor, strokeWidth: 2 }} /> )}
                             {(item.type === 'bbox' || (item.type === 'polygon' && item.points && item.points.length > 0)) && (
                               <foreignObject x={labelX} y={labelY < 0 ? 0 : labelY} width="120" height="30"> 
-                                <div xmlns="http://www.w3.org/1999/xhtml" className="detection-label" style={{ backgroundColor: labelBackgroundColor, color: item.severity === 'low' ? '#000' : '#fff', display: 'inline-block', padding: '3px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                <div className="detection-label" style={{ backgroundColor: labelBackgroundColor, color: item.severity === 'low' ? '#000' : '#fff', display: 'inline-block', padding: '3px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, whiteSpace: 'nowrap' }}>
                                   {item.name}
                                 </div>
                               </foreignObject>
