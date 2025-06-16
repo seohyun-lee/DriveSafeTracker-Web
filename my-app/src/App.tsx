@@ -380,7 +380,7 @@ function App() {
     <>
       <header className="header">
         <nav className="nav">
-          <div className="logo">🚗 RoadVision</div>
+          <div className="logo">🚗 DriveSafe Tracker</div>
           <div className="header-controls">
             <div className="view-selector">
               <button

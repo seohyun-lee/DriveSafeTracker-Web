@@ -324,5 +324,5 @@ function addDetectionOverlay(name, x, y, severity) {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('RoadVision initialized');
+    console.log('DriveSafe Tracker initialized');
 });
